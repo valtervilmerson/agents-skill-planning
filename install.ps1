@@ -13,10 +13,10 @@ Write-Host "-----------------------------"
 New-Item -ItemType Directory -Force -Path (Split-Path $Dest) | Out-Null
 
 # Se rodando de dentro do repo clonado, usa arquivo local. Caso contrário, baixa do GitHub.
-$ScriptDir    = Split-Path -Parent $MyInvocation.MyCommand.Path
-$LocalSkill   = Join-Path $ScriptDir "skills\project-planner\SKILL.md"
+$ScriptPath = $MyInvocation.MyCommand.Path
+$LocalSkill = if ($ScriptPath) { Join-Path (Split-Path -Parent $ScriptPath) "skills\project-planner\SKILL.md" } else { "" }
 
-if (Test-Path $LocalSkill) {
+if ($LocalSkill -and (Test-Path $LocalSkill)) {
     Copy-Item $LocalSkill $Dest -Force
     Write-Host "✓ Instalado de arquivo local"
 } else {
