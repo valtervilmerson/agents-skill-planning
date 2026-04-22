@@ -7,65 +7,82 @@ GITHUB_BRANCH="main"
 RAW="https://raw.githubusercontent.com/$GITHUB_USER/$GITHUB_REPO/$GITHUB_BRANCH"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-}")" 2>/dev/null && pwd || echo "")"
-LOCAL_SKILL="$SCRIPT_DIR/skills/project-planner/SKILL.md"
-LOCAL_YAML="$SCRIPT_DIR/skills/project-planner/agents/openai.yaml"
 
 echo ""
-echo "Project Planner — instalação"
+echo "Project Planner — instalacao"
 echo "-----------------------------"
 echo ""
-echo "Para qual plataforma deseja instalar?"
-echo "  [1] Claude CLI  — disponível em qualquer projeto via /project-planner"
-echo "  [2] Codex       — instala no repositório atual via \$project-planner"
-echo "  [3] Ambos"
+echo "Plataforma:"
+echo "  [1] Claude CLI"
+echo "  [2] Codex"
 echo ""
-read -rp "Opção [1/2/3]: " OPCAO
+read -rp "Opcao [1/2]: " PLATAFORMA
 
 download() {
   local src="$1" dest="$2"
   mkdir -p "$(dirname "$dest")"
-  if [ -f "$SCRIPT_DIR/$src" ]; then
-    cp "$SCRIPT_DIR/$src" "$dest"
+  local local_path=""
+  if [ -n "$SCRIPT_DIR" ]; then
+    local_path="$SCRIPT_DIR/$src"
+  fi
+  if [ -n "$local_path" ] && [ -f "$local_path" ]; then
+    cp "$local_path" "$dest"
   else
     if ! command -v curl &>/dev/null; then
-      echo "Erro: curl não encontrado. Instale curl e tente novamente."
+      echo "Erro: curl nao encontrado. Instale curl e tente novamente."
       exit 1
     fi
     curl -fsSL "$RAW/$src" -o "$dest"
   fi
 }
 
-install_claude() {
+install_claude_global() {
   local dest="$HOME/.claude/commands/project-planner.md"
   download "skills/project-planner/SKILL.md" "$dest"
-  echo "  Claude CLI : $dest"
-  echo "  Comando    : /project-planner"
+  echo "  Destino : $dest"
+  echo "  Escopo  : global (qualquer projeto)"
+  echo "  Comando : /project-planner"
+}
+
+install_claude_local() {
+  local dest="./.claude/commands/project-planner.md"
+  download "skills/project-planner/SKILL.md" "$dest"
+  echo "  Destino : $dest"
+  echo "  Escopo  : local (somente este repositorio)"
+  echo "  Comando : /project-planner"
 }
 
 install_codex() {
-  local dest_skill="./skills/project-planner/SKILL.md"
-  local dest_yaml="./skills/project-planner/agents/openai.yaml"
-  download "skills/project-planner/SKILL.md" "$dest_skill"
-  download "skills/project-planner/agents/openai.yaml" "$dest_yaml"
-  echo "  Codex : $dest_skill"
-  echo "          $dest_yaml"
+  download "skills/project-planner/SKILL.md" "./skills/project-planner/SKILL.md"
+  download "skills/project-planner/agents/openai.yaml" "./skills/project-planner/agents/openai.yaml"
+  echo "  Destino : ./skills/project-planner/"
+  echo "  Escopo  : local (somente este repositorio)"
   echo "  Comando : \$project-planner"
 }
 
 echo ""
-case "$OPCAO" in
+
+case "$PLATAFORMA" in
   1)
-    install_claude
+    echo "Escopo:"
+    echo "  [1] Global — disponivel em qualquer projeto"
+    echo "  [2] Local  — disponivel somente neste repositorio"
+    echo ""
+    read -rp "Opcao [1/2]: " ESCOPO
+    echo ""
+    case "$ESCOPO" in
+      1) install_claude_global ;;
+      2) install_claude_local ;;
+      *) echo "Opcao invalida."; exit 1 ;;
+    esac
     ;;
   2)
-    install_codex
-    ;;
-  3)
-    install_claude
+    echo "Codex instala sempre no repositorio atual."
+    echo ""
     install_codex
     ;;
   *)
-    echo "Opção inválida. Execute novamente e escolha 1, 2 ou 3."
+    echo "Opcao invalida. Execute novamente e escolha 1 ou 2."
     exit 1
     ;;
 esac
