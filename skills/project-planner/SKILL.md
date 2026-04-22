@@ -53,7 +53,7 @@ Para instalar agora via terminal (recomendado):
   curl -fsSL https://raw.githubusercontent.com/valtervilmerson/agents-skill-planning/main/install.sh | bash
 
   Windows
-  irm https://raw.githubusercontent.com/valtervilmerson/agents-skill-planning/main/install.ps1 | iex
+  iex (irm https://raw.githubusercontent.com/valtervilmerson/agents-skill-planning/main/install.ps1)
 
 Ou posso instalar agora nesta sessão:
   [S] Sim — instalar em ~/.claude/commands/project-planner.md
@@ -972,7 +972,7 @@ curl -fsSL https://raw.githubusercontent.com/valtervilmerson/agents-skill-planni
 
 **Windows**
 ```powershell
-irm https://raw.githubusercontent.com/valtervilmerson/agents-skill-planning/main/install.ps1 | iex
+iex (irm https://raw.githubusercontent.com/valtervilmerson/agents-skill-planning/main/install.ps1)
 ```
 
 Após a instalação, invoque de qualquer repositório:

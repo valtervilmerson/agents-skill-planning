@@ -1,5 +1,3 @@
-$ErrorActionPreference = "Stop"
-
 $GitHubUser   = "valtervilmerson"
 $GitHubRepo   = "agents-skill-planning"
 $GitHubBranch = "main"
@@ -7,22 +5,25 @@ $SkillRemote  = "https://raw.githubusercontent.com/$GitHubUser/$GitHubRepo/$GitH
 $Dest         = "$env:USERPROFILE\.claude\commands\project-planner.md"
 
 Write-Host ""
-Write-Host "Project Planner — instalação"
+Write-Host "Project Planner - instalacao"
 Write-Host "-----------------------------"
 
 New-Item -ItemType Directory -Force -Path (Split-Path $Dest) | Out-Null
 
-# Se rodando de dentro do repo clonado, usa arquivo local. Caso contrário, baixa do GitHub.
+# Se rodando de dentro do repo clonado, usa arquivo local. Caso contrario, baixa do GitHub.
 $ScriptPath = $MyInvocation.MyCommand.Path
-$LocalSkill = if ($ScriptPath) { Join-Path (Split-Path -Parent $ScriptPath) "skills\project-planner\SKILL.md" } else { "" }
+$LocalSkill = ""
+if ($ScriptPath -ne $null -and $ScriptPath -ne "") {
+    $LocalSkill = Join-Path (Split-Path -Parent $ScriptPath) "skills\project-planner\SKILL.md"
+}
 
-if ($LocalSkill -and (Test-Path $LocalSkill)) {
+if ($LocalSkill -ne "" -and (Test-Path $LocalSkill)) {
     Copy-Item $LocalSkill $Dest -Force
-    Write-Host "✓ Instalado de arquivo local"
+    Write-Host "OK Instalado de arquivo local"
 } else {
-    Write-Host "→ Baixando de $GitHubUser/$GitHubRepo..."
-    Invoke-WebRequest -Uri $SkillRemote -OutFile $Dest -UseBasicParsing
-    Write-Host "✓ Instalado do GitHub"
+    Write-Host "-> Baixando de $GitHubUser/$GitHubRepo..."
+    (New-Object Net.WebClient).DownloadFile($SkillRemote, $Dest)
+    Write-Host "OK Instalado do GitHub"
 }
 
 Write-Host ""
