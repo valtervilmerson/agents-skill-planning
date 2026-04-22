@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Planner"
+  short_description: "Plan new or existing software projects — from idea to executable technical plan"
+  default_prompt: "Load the project-planner skill. Open the session by sending the Opening message defined in the skill — ask the user whether this is a new project or an existing one, then wait for the answer before doing anything else."
